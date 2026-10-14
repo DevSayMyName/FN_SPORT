@@ -315,3 +315,119 @@ async function loadVictoriesFromGoogleSheet() {
     }
   }
 }
+
+
+
+//frases
+// Animación de Aparición para la Sección de Frases
+const quotesObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.2 });
+
+const quotesSection = document.querySelector('.quotes-section');
+if (quotesSection) {
+  quotesObserver.observe(quotesSection);
+}
+
+
+// ================= CONSUMO DINÁMICO DEL STAFF DESDE GOOGLE SHEETS =================
+document.addEventListener('DOMContentLoaded', () => {
+  loadStaffFromGoogleSheet();
+});
+
+async function loadStaffFromGoogleSheet() {
+  // ID de tu Google Sheet para el Staff
+  const SHEET_ID = '1Ur_hK9L-rRRiGFjU9_qos1d7Co9XVcWLAJ-2t40LWQw';
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+
+  const loader = document.getElementById('staff-loader');
+  const container = document.getElementById('staff-dynamic-container');
+
+  if (!container) return;
+
+  try {
+    const response = await fetch(url);
+    const text = await response.text();
+
+    const jsonString = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+    const rawData = JSON.parse(jsonString);
+
+    // Mapeo dinámico de columnas (NOMBRE, ROL, PAIS, EDAD, FOTO/IMG)
+    let cols = { nombre: 0, rol: 1, pais: 2, edad: 3, foto: 4 };
+
+    if (rawData.table.cols && rawData.table.cols.length > 0) {
+      rawData.table.cols.forEach((col, idx) => {
+        const label = (col.label || col.id || '').toUpperCase();
+        if (label.includes('NOMBRE')) cols.nombre = idx;
+        if (label.includes('ROL')) cols.rol = idx;
+        if (label.includes('PAIS')) cols.pais = idx;
+        if (label.includes('EDAD')) cols.edad = idx;
+        if (label.includes('FOTO') || label.includes('IMG')) cols.foto = idx;
+      });
+    }
+
+    const rows = rawData.table.rows;
+    const staffMembers = [];
+
+    rows.forEach(r => {
+      if (!r.c) return;
+
+      const nombreVal = r.c[cols.nombre] ? r.c[cols.nombre].v : '';
+      const rolVal = r.c[cols.rol] ? r.c[cols.rol].v : 'Staff';
+      const paisVal = r.c[cols.pais] ? r.c[cols.pais].v : 'Internacional';
+      const edadVal = r.c[cols.edad] ? r.c[cols.edad].v : '-';
+      const fotoVal = r.c[cols.foto] ? r.c[cols.foto].v : '';
+
+      // Omitir cabeceras si se leen de nuevo
+      if (String(nombreVal).toUpperCase() === 'NOMBRE' || String(rolVal).toUpperCase() === 'ROL') return;
+
+      if (nombreVal) {
+        staffMembers.push({
+          nombre: nombreVal,
+          rol: rolVal,
+          pais: paisVal,
+          edad: edadVal,
+          foto: fotoVal
+        });
+      }
+    });
+
+    if (loader) loader.style.display = 'none';
+
+    if (staffMembers.length === 0) {
+      container.innerHTML = '<p class="no-victories">No se encontraron miembros del staff registrados.</p>';
+      return;
+    }
+
+    // Renderizado dinámico de tarjetas
+    container.innerHTML = staffMembers.map(m => `
+      <div class="staff-card">
+        <div class="staff-avatar-wrapper">
+          ${m.foto ? 
+            `<img src="${m.foto}" alt="${m.nombre}" class="staff-avatar" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/111/fff?text=FN';">` : 
+            `<i class="fas fa-user-shield staff-icon-placeholder"></i>`
+          }
+        </div>
+        <span class="staff-role-badge">${m.rol}</span>
+        <h3 class="staff-name">${m.nombre}</h3>
+        <ul class="staff-details-list">
+          <li><i class="fas fa-globe-americas"></i> <strong>${m.pais}</strong></li>
+          <li><i class="fas fa-birthday-cake"></i> <strong>${m.edad} años</strong></li>
+        </ul>
+      </div>
+    `).join('');
+
+  } catch (error) {
+    console.error('Error al cargar el Staff:', error);
+    if (loader) {
+      loader.innerHTML = `
+        <i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i>
+        <p>No se pudieron cargar los datos del Staff. Asegúrate de otorgar acceso público a la hoja de cálculo.</p>
+      `;
+    }
+  }
+}

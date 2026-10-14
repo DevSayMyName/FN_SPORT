@@ -692,3 +692,621 @@ body {
   font-size: 1rem;
   padding: 40px 0;
 }
+
+/* ================= SECCIÓN FRASES Y FILOSOFÍA (DESGARRE BLANCO/NEGRO) ================= */
+.quotes-section {
+  position: relative;
+  background-color: #f8f9fa; /* Fondo blanco humo principal */
+  /* Genera un patrón de pinceladas/desgarres negros y grises con CSS radial/linear gradients */
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.8) 12%, transparent 13%),
+    radial-gradient(circle at 90% 80%, rgba(30, 30, 30, 0.9) 0%, rgba(20, 20, 20, 0.7) 15%, transparent 16%),
+    linear-gradient(135deg, rgba(0, 0, 0, 0.08) 25%, transparent 25%),
+    linear-gradient(225deg, rgba(0, 0, 0, 0.08) 25%, transparent 25%),
+    linear-gradient(45deg, #ffffff 0%, #e8e8e8 100%);
+  color: #111111;
+  padding: 100px 20px;
+  overflow: hidden;
+  border-top: 4px solid #000000;
+  border-bottom: 4px solid #000000;
+}
+
+/* Efecto de Desgarres y Pinceladas en las Esquinas */
+.quotes-section::before,
+.quotes-section::after {
+  content: "";
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  background-color: #0d0d0d;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.9;
+}
+
+/* Desgarre Superior Izquierdo */
+.quotes-section::before {
+  top: -150px;
+  left: -150px;
+  clip-path: polygon(0 0, 100% 0, 80% 50%, 100% 100%, 0 100%, 20% 60%);
+}
+
+/* Desgarre Inferior Derecho */
+.quotes-section::after {
+  bottom: -150px;
+  right: -150px;
+  clip-path: polygon(20% 0%, 100% 0%, 80% 50%, 100% 100%, 0% 100%, 40% 40%);
+}
+
+.quotes-container {
+  max-width: 1250px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+/* Encabezado */
+.quotes-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.quotes-badge {
+  display: inline-block;
+  background: #000000;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 900;
+  padding: 6px 16px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  clip-path: polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%);
+}
+
+.quotes-main-title {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #0d0d0d;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.quotes-subtitle {
+  color: #555555;
+  font-size: 0.95rem;
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+/* Grid de Tarjetas */
+.quotes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+}
+
+/* Tarjeta de Frase Individual */
+.quote-card {
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 35px 30px;
+  position: relative;
+  box-shadow: 8px 8px 0px #000000; /* Sombra sólida estilo eSports grunge */
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.quote-card:hover {
+  transform: translate(-4px, -4px);
+  box-shadow: 14px 14px 0px #000000;
+  background: #fafafa;
+}
+
+/* Tarjeta Destacada (Frase Principal) */
+.quote-card.featured {
+  grid-column: 1 / -1;
+  background: #0d0d0d;
+  color: #ffffff;
+  border-color: #000000;
+  box-shadow: 10px 10px 0px #555555;
+}
+
+.quote-card.featured:hover {
+  background: #141414;
+  box-shadow: 14px 14px 0px #333333;
+}
+
+/* Etiqueta / Tag Superior */
+.quote-tag {
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  color: #666666;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quote-card.featured .quote-tag {
+  color: #dddddd;
+}
+
+/* Comilla gigante */
+.quote-icon {
+  font-size: 2.2rem;
+  color: #cccccc;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.quote-card.featured .quote-icon {
+  color: #444444;
+}
+
+/* Texto de la Frase */
+.quote-text {
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.6;
+  color: #111111;
+  font-style: italic;
+  margin-bottom: 25px;
+}
+
+.quote-card.featured .quote-text {
+  font-size: 1.4rem;
+  color: #ffffff;
+}
+
+/* Autor / Cierre */
+.quote-author {
+  border-top: 2px solid #e0e0e0;
+  padding-top: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.quote-card.featured .quote-author {
+  border-top-color: rgba(255, 255, 255, 0.15);
+}
+
+.author-name {
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #000000;
+  letter-spacing: 1px;
+}
+
+.quote-card.featured .author-name {
+  color: #ffffff;
+}
+
+.author-role {
+  font-size: 0.75rem;
+  color: #777777;
+  font-weight: 600;
+}
+
+.quote-card.featured .author-role {
+  color: #aaaaaa;
+}
+
+/* Animación Reveal Scroll */
+.quote-card {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease;
+}
+
+.quotes-section.visible .quote-card {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .quotes-main-title {
+    font-size: 1.7rem;
+  }
+  
+  .quote-text {
+    font-size: 1rem;
+  }
+  
+  .quote-card.featured .quote-text {
+    font-size: 1.15rem;
+  }
+}
+
+/* ================= BANNER HORIZONTAL DE FRASE ================= */
+.horizontal-quote-banner {
+  width: 100%;
+  background: #080808;
+  /* Fondo con trama técnica eSports diagonal */
+  background-image: 
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.03) 100%),
+    repeating-linear-gradient(45deg, #0d0d0d, #0d0d0d 12px, #050505 12px, #050505 24px);
+  border-top: 2px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  padding: 60px 20px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Línea de brillo central de fondo */
+.banner-accent-line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: 100px;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.banner-quote-container {
+  max-width: 1100px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+/* Badge superior en blanco y negro */
+.banner-badge {
+  background: #ffffff;
+  color: #000000;
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 5px 16px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Texto de la frase */
+.horizontal-quote-text {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.5;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  position: relative;
+  padding: 0 40px;
+  margin: 0;
+  transition: text-shadow 0.3s ease;
+}
+
+.horizontal-quote-banner:hover .horizontal-quote-text {
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+}
+
+/* Comillas flotantes en los extremos */
+.quote-icon-left,
+.quote-icon-right {
+  font-size: 1.2rem;
+  color: #777777;
+  position: absolute;
+}
+
+.quote-icon-left {
+  top: 0;
+  left: 5px;
+}
+
+.quote-icon-right {
+  bottom: 0;
+  right: 5px;
+}
+
+/* Firma / Subtítulo */
+.banner-author {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #888888;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+/* Adaptación Móvil */
+@media (max-width: 768px) {
+  .horizontal-quote-banner {
+    padding: 40px 15px;
+  }
+
+  .horizontal-quote-text {
+    font-size: 1.05rem;
+    padding: 0 25px;
+  }
+
+  .quote-icon-left,
+  .quote-icon-right {
+    font-size: 0.9rem;
+  }
+}
+
+/* ================= BANNER STAFF (BLANCO CON DETALLES NEGROS) ================= */
+.staff-banner-section {
+  width: 100%;
+  background-color: #ffffff;
+  /* Fondo con textura diagonal discreta en grises claros */
+  background-image: 
+    linear-gradient(135deg, #000000 12px, transparent 12px),
+    linear-gradient(315deg, #000000 12px, transparent 12px),
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.02) 10px, transparent 10px, transparent 20px);
+  background-position: top left, bottom right, 0 0;
+  background-size: 35px 35px, 35px 35px, auto;
+  background-repeat: no-repeat, no-repeat, repeat;
+  border-top: 4px solid #000000;
+  border-bottom: 4px solid #000000;
+  padding: 70px 20px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Tarjeta contenedora blanca con marco y sombra sólida negra */
+.staff-banner-container {
+  max-width: 1150px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  background: #ffffff;
+  border: 3px solid #000000;
+  padding: 45px 35px;
+  box-shadow: 10px 10px 0px #000000;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.staff-banner-container:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 15px 15px 0px #000000;
+}
+
+/* Badge superior negro con letras blancas */
+.staff-badge {
+  background: #000000;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 900;
+  padding: 6px 20px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  clip-path: polygon(6% 0%, 100% 0%, 94% 100%, 0% 100%);
+}
+
+.staff-badge i {
+  color: #ffffff;
+}
+
+/* Frase principal en negro */
+.staff-banner-text {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #000000;
+  line-height: 1.6;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin: 0;
+  max-width: 950px;
+}
+
+/* Destacado de marca */
+.highlight-black {
+  background: #000000;
+  color: #ffffff;
+  padding: 2px 10px;
+  display: inline-block;
+  letter-spacing: 1px;
+}
+
+/* Subtexto o firma inferior */
+.staff-banner-subtext {
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: #222222;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border-top: 2px solid #000000;
+  padding-top: 12px;
+  width: fit-content;
+}
+
+/* Adaptación para pantallas móviles */
+@media (max-width: 768px) {
+  .staff-banner-section {
+    padding: 40px 15px;
+  }
+
+  .staff-banner-container {
+    padding: 28px 20px;
+    box-shadow: 6px 6px 0px #000000;
+  }
+
+  .staff-banner-text {
+    font-size: 1.05rem;
+  }
+
+  .staff-banner-subtext {
+    font-size: 0.72rem;
+    letter-spacing: 1.5px;
+  }
+}
+
+/* ================= SECCIÓN STAFF (DESDE GOOGLE SHEETS) ================= */
+/* ================= SECCIÓN STAFF (DISEÑO PRO ESPORTS - RECTANGULAR) ================= */
+.staff-section {
+  background-color: #050505;
+  padding: 80px 20px;
+  position: relative;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.staff-container {
+  max-width: 1250px;
+  margin: 0 auto;
+}
+
+.staff-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 30px;
+}
+
+/* Tarjeta individual del Staff */
+.staff-card {
+  background: #0d0d0d;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 0; /* Padding en 0 para que la foto ocupe el ancho superior completo */
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.35s ease, 
+              box-shadow 0.35s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.staff-card:hover {
+  transform: translateY(-8px);
+  border-color: #ffffff;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.9), 0 0 15px rgba(255, 255, 255, 0.12);
+}
+
+/* Cabecera / Marco Rectangular de la Imagen */
+.staff-avatar-wrapper {
+  width: 100%;
+  height: 240px; /* Altura ideal para encuadrar fotos y logos sin deformar */
+  background: #141414;
+  border-radius: 0;
+  border: none;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+  padding: 0;
+  margin-bottom: 0;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+/* Sombras y degradado suave en la parte inferior de la foto */
+.staff-avatar-wrapper::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 35%;
+  background: linear-gradient(to top, rgba(13, 13, 13, 0.95) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.staff-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 0; /* Elimina la forma redonda */
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.staff-card:hover .staff-avatar {
+  transform: scale(1.08); /* Zoom fluido pro al pasar el cursor */
+}
+
+.staff-icon-placeholder {
+  font-size: 3.8rem;
+  color: #555555;
+}
+
+/* Badge del Rol */
+.staff-role-badge {
+  background: #ffffff;
+  color: #000000;
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 5px 14px;
+  border-radius: 4px; /* Bordes rectos sutiles */
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 18px;
+  margin-bottom: 10px;
+  display: inline-block;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}
+
+/* Nombre del Staff */
+.staff-name {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  padding: 0 15px;
+}
+
+/* Detalles (País y Edad) */
+.staff-details-list {
+  list-style: none;
+  width: 100%;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 14px 15px;
+  margin-top: auto;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.staff-details-list li {
+  font-size: 0.8rem;
+  color: #bbbbbb;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.staff-details-list li i {
+  color: #ffffff;
+  font-size: 0.85rem;
+}
+
+.staff-details-list strong {
+  color: #ffffff;
+  font-weight: 800;
+}
