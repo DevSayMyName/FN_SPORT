@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FN SPORT</title>
+  <!-- Tipografía Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800;900&display=swap" rel="stylesheet">
+  <!-- Font Awesome para los íconos del menú -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Barra de Navegación -->
+  <header class="navbar" id="navbar">
+    <div class="nav-container">
+      <button class="menu-toggle" id="mobile-menu" aria-label="Abrir menú">
+        <i class="fas fa-bars"></i>
+      </button>
+      <ul class="nav-menu" id="nav-menu">
+        <li><a href="#inicio" class="nav-link active"><i class="fas fa-home"></i> INICIO</a></li>
+        <li><a href="#sobre-nosotros" class="nav-link"><i class="fas fa-users"></i> SOBRE NOSOTROS</a></li>
+        <li><a href="#presentes-en" class="nav-link"><i class="fas fa-globe"></i> PRESENTES EN</a></li>
+        <li><a href="#equipo" class="nav-link"><i class="fas fa-shield-alt"></i> EQUIPO</a></li>
+        <li><a href="#inversionistas" class="nav-link"><i class="fas fa-handshake"></i> INVERSIONISTAS Y SPONSORS</a></li>
+        <li><a href="#staff" class="nav-link"><i class="fas fa-id-badge"></i> STAFF</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Sección Hero -->
+  <section class="hero" id="inicio">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="logo-container">
+        <img src="./img/blanco.PNG" alt="FN SPORT Logo" class="hero-logo">
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección Sobre Nosotros -->
+  <section class="about-section" id="sobre-nosotros">
+    <div class="about-container">
+      
+      <!-- Columna Izquierda: Logo -->
+      <div class="about-image-wrapper">
+        <div class="logo-frame">
+          <img src="./img/acdFN.png" alt="Logo FN SPORT" class="about-logo">
+        </div>
+      </div>
+
+      <!-- Columna Derecha: Texto e Información -->
+      <div class="about-content">
+        <h2 class="section-title">
+          <i class="fas fa-info-circle"></i> SOBRE NOSOTROS
+        </h2>
+        <h3 class="section-subtitle">PASIÓN, DISCIPLINA Y EXCELENCIA COMPETITIVA</h3>
+        
+        <p class="about-text">
+          En <strong>FN SPORT</strong>, somos una organización comprometida con la competitividad de alto nivel y el desarrollo continuo de nuestra comunidad. Nos caracterizamos por dar el <strong>100% en cada desafío</strong>, superando límites y marcando la diferencia dentro y fuera de la competencia.
+        </p>
+
+        <p class="about-text">
+          Nuestra estructura se cimenta en valores sólidos, donde la lealtad, el respeto y la disciplina son los pilares fundamentales. Creemos fielmente en el talento emergente y brindamos una plataforma de apoyo integral a todo aquel competidor que posee una verdadera <strong>hambre de victoria</strong> y la ambición inquebrantable de trascender.
+        </p>
+
+        <!-- Tarjetas destacadas de valores -->
+        <div class="about-highlights">
+          <div class="highlight-item">
+            <i class="fas fa-trophy"></i>
+            <div>
+              <h4>Compromiso Total</h4>
+              <p>Entregamos el 100% en cada torneo y proyecto.</p>
+            </div>
+          </div>
+          <div class="highlight-item">
+            <i class="fas fa-users"></i>
+            <div>
+              <h4>Comunidad y Valores</h4>
+              <p>Fomentamos el trabajo en equipo y la deportividad.</p>
+            </div>
+          </div>
+          <div class="highlight-item">
+            <i class="fas fa-fire"></i>
+            <div>
+              <h4>Mentalidad Ganadora</h4>
+              <p>Apoyamos el talento con verdadera hambre de triunfo.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      
+      
+    </div>
+  </section>
+
+<!-- Sección General de Rosters Dinámica -->
+  <section class="rosters-section" id="rosters">
+    <div class="rosters-container">
+      
+      <div class="main-title-wrapper">
+        <h2 class="section-title"><i class="fas fa-users"></i> NUESTROS ROSTERS</h2>
+        <p class="section-description">Talento, disciplina y competitividad divididos en nuestras divisiones oficiales.</p>
+      </div>
+
+      <!-- Indicador de Carga -->
+      <div id="rosters-loader" class="victories-loader">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Cargando alineaciones de los rosters...</p>
+      </div>
+
+      <!-- Contenedor donde JS construirá cada división y sus jugadores -->
+      <div id="rosters-dynamic-container"></div>
+
+    </div>
+  </section>
+
+
+<!-- Sección Galería de Victorias -->
+  <!-- <section class="victories-section" id="victorias">
+    <div class="victories-container">
+      
+      <div class="main-title-wrapper">
+        <h2 class="section-title">
+          <i class="fas fa-trophy"></i> GALERÍA DE VICTORIAS
+        </h2>
+        <p class="section-description">Nuestros triunfos y momentos de gloria inmortalizados en la historia de FN SPORT.</p>
+      </div>
+
+      <div id="victories-loader" class="victories-loader">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Cargando triunfos desde el sistema...</p>
+      </div>
+
+      <div class="victories-grid" id="victories-grid"></div>
+
+    </div>
+  </section> -->
+
+
+  <script src="script.js"></script>
+</body>
+</html>
