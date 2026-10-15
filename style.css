@@ -1351,3 +1351,318 @@ body {
   color: #ffffff;
   font-weight: 800;
 }
+
+
+/* ================= BANNER ÉPICO DE SPONSORS (ANIMADO - FN ESPORT) ================= */
+.sponsor-banner-section {
+  position: relative;
+  background-color: #030303;
+  padding: 100px 20px;
+  overflow: hidden;
+  border-top: 2px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Fondo con Malla Digital Ciberpunk */
+.cyber-grid-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 30px 30px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Orbe de Luz Ambiental Pulsante */
+.cyber-glow-orb {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 70%);
+  filter: blur(50px);
+  pointer-events: none;
+  z-index: 1;
+  animation: pulseGlow 4s ease-in-out infinite alternate;
+}
+
+@keyframes pulseGlow {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.5; }
+  100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+}
+
+.sponsor-banner-container {
+  max-width: 1100px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+
+/* Badge Superior */
+.sponsor-badge {
+  background: #ffffff;
+  color: #000000;
+  font-size: 0.75rem;
+  font-weight: 900;
+  padding: 6px 18px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  clip-path: polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+}
+
+.sponsor-subtitle-static {
+  color: #888888;
+  font-size: clamp(0.75rem, 2vw, 0.95rem);
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+/* Wrapper del Texto Cambiante */
+.dynamic-text-wrapper {
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+}
+
+.dynamic-sponsor-text {
+  font-size: clamp(1.6rem, 5vw, 3rem);
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+  line-height: 1.2;
+}
+
+/* Cursor Parpadeante */
+.typing-cursor {
+  font-size: clamp(1.6rem, 5vw, 3rem);
+  font-weight: 900;
+  color: #ffffff;
+  animation: blinkCursor 0.7s infinite;
+  margin-left: 4px;
+}
+
+@keyframes blinkCursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Descripción */
+.sponsor-description {
+  max-width: 750px;
+  color: #cccccc;
+  font-size: clamp(0.85rem, 1.8vw, 1rem);
+  line-height: 1.6;
+}
+
+.sponsor-description strong {
+  color: #ffffff;
+}
+
+/* Botón CTA eSports */
+.sponsor-cta-wrapper {
+  margin-top: 15px;
+}
+
+.btn-sponsor-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  color: #000000;
+  font-size: 0.9rem;
+  font-weight: 900;
+  padding: 16px 36px;
+  border-radius: 6px;
+  text-decoration: none;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.btn-sponsor-cta:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 0 35px rgba(255, 255, 255, 0.8);
+  background: #ffffff;
+  color: #000000;
+}
+
+.btn-sponsor-cta i {
+  font-size: 1.1rem;
+  color: #000000;
+}
+
+/* Responsivo Móvil */
+@media (max-width: 768px) {
+  .sponsor-banner-section {
+    padding: 60px 15px;
+  }
+  
+  .dynamic-text-wrapper {
+    min-height: 65px;
+  }
+
+  .btn-sponsor-cta {
+    padding: 14px 24px;
+    font-size: 0.8rem;
+  }
+}
+
+
+/* ================= SECCIÓN SPONSORS (DESDE GOOGLE SHEETS) ================= */
+.sponsors-grid-section {
+  background-color: #060606;
+  padding: 80px 20px;
+  position: relative;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sponsors-container {
+  max-width: 1250px;
+  margin: 0 auto;
+}
+
+.sponsors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+/* Tarjeta individual de Sponsor */
+.sponsor-card {
+  background: #0d0d0d;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 28px 22px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sponsor-card:hover {
+  transform: translateY(-6px);
+  border-color: #ffffff;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.9), 0 0 15px rgba(255, 255, 255, 0.12);
+}
+
+/* Contenedor del Logo */
+.sponsor-logo-wrapper {
+  width: 100%;
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sponsor-logo-img {
+  max-width: 85%;
+  max-height: 100px;
+  object-fit: contain;
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.sponsor-card:hover .sponsor-logo-img {
+  transform: scale(1.06);
+}
+
+/* Badge del Rol/Categoría del Patrocinador */
+.sponsor-card-role {
+  background: #ffffff;
+  color: #000000;
+  font-size: 0.7rem;
+  font-weight: 900;
+  padding: 4px 12px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+  display: inline-block;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Nombre de la Marca */
+.sponsor-card-title {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+/* Redes Sociales */
+.sponsor-social-links {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  width: 100%;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sponsor-social-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #161616;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.sponsor-social-btn:hover {
+  background: #ffffff;
+  color: #000000;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+}
+
+/* Adaptación Móvil */
+@media (max-width: 768px) {
+  .sponsors-grid-section {
+    padding: 50px 15px;
+  }
+  
+  .sponsors-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}

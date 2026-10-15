@@ -431,3 +431,172 @@ async function loadStaffFromGoogleSheet() {
     }
   }
 }
+
+
+
+
+//
+/// ================= ANIMACIÓN MÁQUINA DE ESCRIBIR ÉPICA (SPONSORS - FN ESPORT) =================
+document.addEventListener('DOMContentLoaded', () => {
+  const phrases = [
+    "ÚNETE A FN ESPORT",
+    "INVIERTE EN LA VICTORIA",
+    "SOMOS FN ESPORT",
+    "SÉ NUESTRO SPONSOR",
+    "HAZ HISTORIA CON NOSOTROS",
+    "DOMINA EL COMPETITIVO",
+    "EL FUTURO ES FN ESPORT"
+  ];
+
+  const targetElement = document.getElementById('dynamic-sponsor-text');
+  if (!targetElement) return;
+
+  let phraseIndex = 0;
+  let charIndex = 0;
+  let isDeleting = false;
+  const typingSpeed = 65;    // Velocidad de escritura
+  const deletingSpeed = 35;  // Velocidad de borrado
+  const pauseTime = 1800;    // Tiempo que se muestra cada frase en pantalla
+
+  function typeEffect() {
+    const currentPhrase = phrases[phraseIndex];
+
+    if (isDeleting) {
+      targetElement.textContent = currentPhrase.substring(0, charIndex - 1);
+      charIndex--;
+    } else {
+      targetElement.textContent = currentPhrase.substring(0, charIndex + 1);
+      charIndex++;
+    }
+
+    let nextSpeed = isDeleting ? deletingSpeed : typingSpeed;
+
+    if (!isDeleting && charIndex === currentPhrase.length) {
+      nextSpeed = pauseTime;
+      isDeleting = true;
+    } 
+    else if (isDeleting && charIndex === 0) {
+      isDeleting = false;
+      phraseIndex = (phraseIndex + 1) % phrases.length;
+      nextSpeed = 300;
+    }
+
+    setTimeout(typeEffect, nextSpeed);
+  }
+
+  typeEffect();
+});
+
+
+// ================= CONSUMO DINÁMICO DE SPONSORS DESDE GOOGLE SHEETS =================
+document.addEventListener('DOMContentLoaded', () => {
+  loadSponsorsFromGoogleSheet();
+});
+
+async function loadSponsorsFromGoogleSheet() {
+  // ID de la Hoja de Cálculo de Sponsors
+  const SHEET_ID = '158f-BBBHiDbsOsz-y53wbI5BipnHvEBa81o1-_eY5ZY';
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+
+  const loader = document.getElementById('sponsors-loader');
+  const container = document.getElementById('sponsors-dynamic-container');
+
+  if (!container) return;
+
+  try {
+    const response = await fetch(url);
+    const text = await response.text();
+
+    const jsonString = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+    const rawData = JSON.parse(jsonString);
+
+    // Mapeo flexible de columnas (NOMBRE, LOGO, ROL, INSTAGRAM, FACEBOOK, TIKTOK)
+    let cols = { nombre: 0, logo: 1, rol: 2, instagram: 3, facebook: 4, tiktok: 5 };
+
+    if (rawData.table.cols && rawData.table.cols.length > 0) {
+      rawData.table.cols.forEach((col, idx) => {
+        const label = (col.label || col.id || '').toUpperCase();
+        if (label.includes('NOMBRE')) cols.nombre = idx;
+        if (label.includes('LOGO') || label.includes('IMG')) cols.logo = idx;
+        if (label.includes('ROL') || label.includes('TIPO')) cols.rol = idx;
+        if (label.includes('INSTAGRAM') || label.includes('IG')) cols.instagram = idx;
+        if (label.includes('FACEBOOK') || label.includes('FB')) cols.facebook = idx;
+        if (label.includes('TIKTOK') || label.includes('TK')) cols.tiktok = idx;
+      });
+    }
+
+    const rows = rawData.table.rows;
+    const sponsorsList = [];
+
+    rows.forEach(r => {
+      if (!r.c) return;
+
+      const nombreVal = r.c[cols.nombre] ? r.c[cols.nombre].v : '';
+      const logoVal = r.c[cols.logo] ? r.c[cols.logo].v : '';
+      const rolVal = r.c[cols.rol] ? r.c[cols.rol].v : 'Sponsor Oficial';
+      const igVal = r.c[cols.instagram] ? r.c[cols.instagram].v : '';
+      const fbVal = r.c[cols.facebook] ? r.c[cols.facebook].v : '';
+      const tkVal = r.c[cols.tiktok] ? r.c[cols.tiktok].v : '';
+
+      // Omitir fila si es la cabecera
+      if (String(nombreVal).toUpperCase() === 'NOMBRE' || String(logoVal).toUpperCase() === 'LOGO') return;
+
+      if (nombreVal || logoVal) {
+        sponsorsList.push({
+          nombre: nombreVal || 'Marca Aliada',
+          logo: logoVal,
+          rol: rolVal,
+          instagram: igVal,
+          facebook: fbVal,
+          tiktok: tkVal
+        });
+      }
+    });
+
+    if (loader) loader.style.display = 'none';
+
+    if (sponsorsList.length === 0) {
+      container.innerHTML = '<p class="no-victories">No se encontraron sponsors registrados por el momento.</p>';
+      return;
+    }
+
+    // Generar HTML dinámico
+    container.innerHTML = sponsorsList.map(s => {
+      // Construir iconos de redes solo si existe el enlace
+      let socialButtons = '';
+      if (s.instagram) {
+        socialButtons += `<a href="${s.instagram}" target="_blank" class="sponsor-social-btn" title="Instagram"><i class="fab fa-instagram"></i></a>`;
+      }
+      if (s.facebook) {
+        socialButtons += `<a href="${s.facebook}" target="_blank" class="sponsor-social-btn" title="Facebook"><i class="fab fa-facebook-f"></i></a>`;
+      }
+      if (s.tiktok) {
+        socialButtons += `<a href="${s.tiktok}" target="_blank" class="sponsor-social-btn" title="TikTok"><i class="fab fa-tiktok"></i></a>`;
+      }
+
+      return `
+        <div class="sponsor-card">
+          <div class="sponsor-logo-wrapper">
+            ${s.logo ? 
+              `<img src="${s.logo}" alt="${s.nombre}" class="sponsor-logo-img" onerror="this.onerror=null; this.src='https://via.placeholder.com/200x100/111/fff?text=${encodeURIComponent(s.nombre)}';">` : 
+              `<i class="fas fa-handshake" style="font-size: 3rem; color: #555;"></i>`
+            }
+          </div>
+          <span class="sponsor-card-role">${s.rol}</span>
+          <h3 class="sponsor-card-title">${s.nombre}</h3>
+          
+          ${socialButtons ? `<div class="sponsor-social-links">${socialButtons}</div>` : ''}
+        </div>
+      `;
+    }).join('');
+
+  } catch (error) {
+    console.error('Error al cargar los Sponsors:', error);
+    if (loader) {
+      loader.innerHTML = `
+        <i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i>
+        <p>No se pudieron cargar los Sponsors. Verifica que la hoja de cálculo sea pública.</p>
+      `;
+    }
+  }
+}
