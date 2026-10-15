@@ -356,8 +356,8 @@ async function loadStaffFromGoogleSheet() {
     const jsonString = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
     const rawData = JSON.parse(jsonString);
 
-    // Mapeo dinámico de columnas (NOMBRE, ROL, PAIS, EDAD, FOTO/IMG)
-    let cols = { nombre: 0, rol: 1, pais: 2, edad: 3, foto: 4 };
+    // Mapeo dinámico de columnas (NOMBRE, ROL, PAIS, EDAD, FOTO/IMG, INSTAGRAM, FACEBOOK, TIKTOK)
+    let cols = { nombre: 0, rol: 1, pais: 2, edad: 3, foto: 4, instagram: 5, facebook: 6, tiktok: 7 };
 
     if (rawData.table.cols && rawData.table.cols.length > 0) {
       rawData.table.cols.forEach((col, idx) => {
@@ -367,6 +367,9 @@ async function loadStaffFromGoogleSheet() {
         if (label.includes('PAIS')) cols.pais = idx;
         if (label.includes('EDAD')) cols.edad = idx;
         if (label.includes('FOTO') || label.includes('IMG')) cols.foto = idx;
+        if (label.includes('INSTAGRAM') || label.includes('IG')) cols.instagram = idx;
+        if (label.includes('FACEBOOK') || label.includes('FB')) cols.facebook = idx;
+        if (label.includes('TIKTOK') || label.includes('TK')) cols.tiktok = idx;
       });
     }
 
@@ -381,6 +384,9 @@ async function loadStaffFromGoogleSheet() {
       const paisVal = r.c[cols.pais] ? r.c[cols.pais].v : 'Internacional';
       const edadVal = r.c[cols.edad] ? r.c[cols.edad].v : '-';
       const fotoVal = r.c[cols.foto] ? r.c[cols.foto].v : '';
+      const igVal = r.c[cols.instagram] ? r.c[cols.instagram].v : '';
+      const fbVal = r.c[cols.facebook] ? r.c[cols.facebook].v : '';
+      const tkVal = r.c[cols.tiktok] ? r.c[cols.tiktok].v : '';
 
       // Omitir cabeceras si se leen de nuevo
       if (String(nombreVal).toUpperCase() === 'NOMBRE' || String(rolVal).toUpperCase() === 'ROL') return;
@@ -391,7 +397,10 @@ async function loadStaffFromGoogleSheet() {
           rol: rolVal,
           pais: paisVal,
           edad: edadVal,
-          foto: fotoVal
+          foto: fotoVal,
+          instagram: igVal,
+          facebook: fbVal,
+          tiktok: tkVal
         });
       }
     });
@@ -403,23 +412,40 @@ async function loadStaffFromGoogleSheet() {
       return;
     }
 
-    // Renderizado dinámico de tarjetas
-    container.innerHTML = staffMembers.map(m => `
-      <div class="staff-card">
-        <div class="staff-avatar-wrapper">
-          ${m.foto ? 
-            `<img src="${m.foto}" alt="${m.nombre}" class="staff-avatar" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/111/fff?text=FN';">` : 
-            `<i class="fas fa-user-shield staff-icon-placeholder"></i>`
-          }
+    // Renderizado dinámico de tarjetas con Redes Sociales
+    container.innerHTML = staffMembers.map(m => {
+      // Generar botones solo para las redes que tengan enlace
+      let socialButtons = '';
+      if (m.instagram) {
+        socialButtons += `<a href="${m.instagram}" target="_blank" class="staff-social-btn" title="Instagram"><i class="fab fa-instagram"></i></a>`;
+      }
+      if (m.facebook) {
+        socialButtons += `<a href="${m.facebook}" target="_blank" class="staff-social-btn" title="Facebook"><i class="fab fa-facebook-f"></i></a>`;
+      }
+      if (m.tiktok) {
+        socialButtons += `<a href="${m.tiktok}" target="_blank" class="staff-social-btn" title="TikTok"><i class="fab fa-tiktok"></i></a>`;
+      }
+
+      return `
+        <div class="staff-card">
+          <div class="staff-avatar-wrapper">
+            ${m.foto ? 
+              `<img src="${m.foto}" alt="${m.nombre}" class="staff-avatar" onerror="this.onerror=null; this.src='https://via.placeholder.com/250x250/111/fff?text=FN';">` : 
+              `<i class="fas fa-user-shield staff-icon-placeholder"></i>`
+            }
+          </div>
+          <span class="staff-role-badge">${m.rol}</span>
+          <h3 class="staff-name">${m.nombre}</h3>
+          
+          <ul class="staff-details-list">
+            <li><i class="fas fa-globe-americas"></i> <strong>${m.pais}</strong></li>
+            <li><i class="fas fa-birthday-cake"></i> <strong>${m.edad} años</strong></li>
+          </ul>
+
+          ${socialButtons ? `<div class="staff-social-links">${socialButtons}</div>` : ''}
         </div>
-        <span class="staff-role-badge">${m.rol}</span>
-        <h3 class="staff-name">${m.nombre}</h3>
-        <ul class="staff-details-list">
-          <li><i class="fas fa-globe-americas"></i> <strong>${m.pais}</strong></li>
-          <li><i class="fas fa-birthday-cake"></i> <strong>${m.edad} años</strong></li>
-        </ul>
-      </div>
-    `).join('');
+      `;
+    }).join('');
 
   } catch (error) {
     console.error('Error al cargar el Staff:', error);

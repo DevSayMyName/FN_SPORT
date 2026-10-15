@@ -1352,6 +1352,38 @@ body {
   font-weight: 800;
 }
 
+/* Redes Sociales dentro de la Card de Staff */
+.staff-social-links {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  width: 100%;
+  padding: 12px 15px 18px 15px;
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.staff-social-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #161616;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.staff-social-btn:hover {
+  background: #ffffff;
+  color: #000000;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.25);
+}
 
 /* ================= BANNER ÉPICO DE SPONSORS (ANIMADO - FN ESPORT) ================= */
 .sponsor-banner-section {
