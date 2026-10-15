@@ -360,6 +360,11 @@ body {
   }
 }
 
+
+
+/**********************************************/
+
+
 /* ================= ROSTERS SECTION ================= */
 .rosters-section {
   background-color: #000000;
@@ -569,6 +574,10 @@ body {
 }
 
 
+/**********************************************/
+
+
+
 /* ================= GALERÍA DE VICTORIAS ================= */
 .victories-section {
   background-color: #050505;
@@ -692,6 +701,18 @@ body {
   font-size: 1rem;
   padding: 40px 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
 /* ================= SECCIÓN FRASES Y FILOSOFÍA (ALTO CONTRASTE REFORZADO) ================= */
 .quotes-section {
   position: relative;
@@ -1696,5 +1717,439 @@ body {
   .sponsors-grid {
     grid-template-columns: 1fr;
     gap: 20px;
+  }
+}
+
+/* ================= SECCIÓN DESTRUCCIÓN DE MURO (COMPLETO & RESPONSIVE) ================= */
+.wall-destruction-section {
+  position: relative;
+  width: 100%;
+  min-height: 680px;
+  background-color: #050505;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 2px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+  user-select: none;
+  padding: 40px 15px 150px 15px; /* Margen inferior para no solapar los botones */
+}
+
+#wallCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  cursor: crosshair;
+}
+
+.wall-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.9) 100%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Contenido Revelado (FN ESPORT) */
+.fn-reveal-content {
+  position: relative;
+  z-index: 4; /* Por encima del Canvas (z-index: 2) */
+  text-align: center;
+  max-width: 800px;
+  width: 100%;
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none; /* Clics en áreas vacías siguen disparando al muro */
+}
+
+.fn-reveal-content.revealed {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.fn-logo-container {
+  width: 130px;
+  height: 130px;
+  margin: 0 auto 18px auto;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  padding: 4px;
+  background: #0d0d0d;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+}
+
+.fn-logo-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.fn-main-title {
+  font-size: clamp(1.8rem, 5vw, 3.5rem);
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 0 0 25px rgba(255, 255, 255, 0.6);
+  margin-bottom: 12px;
+  line-height: 1.1;
+}
+
+.fn-tagline {
+  color: #cccccc;
+  font-size: clamp(0.85rem, 2vw, 1.1rem);
+  line-height: 1.5;
+  margin-bottom: 25px;
+}
+
+/* Botón de WhatsApp */
+.btn-join-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #25d366;
+  color: #000000;
+  font-size: 0.95rem;
+  font-weight: 900;
+  padding: 14px 30px;
+  border-radius: 6px;
+  text-decoration: none;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 0 25px rgba(37, 211, 102, 0.4);
+  pointer-events: none; /* Bloqueado hasta que el muro caiga */
+}
+
+/* Habilitar clic en el botón de WhatsApp cuando se revela el contenido */
+.fn-reveal-content.revealed .btn-join-whatsapp {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.btn-join-whatsapp:hover {
+  transform: translateY(-4px) scale(1.04);
+  box-shadow: 0 0 40px rgba(37, 211, 102, 0.8);
+  background: #20bd5a;
+  color: #000000;
+}
+
+.btn-join-whatsapp i {
+  font-size: 1.3rem;
+}
+
+/* Panel de Controles en la parte inferior */
+.wall-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 90%;
+  max-width: 480px;
+}
+
+.controls-hint {
+  color: #aaaaaa;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.control-buttons {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  justify-content: center;
+}
+
+.btn-action {
+  border: none;
+  padding: 12px 18px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-fire {
+  background: #ffffff;
+  color: #000000;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+.btn-fire:hover {
+  background: #e6e6e6;
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.6);
+}
+
+.btn-repair {
+  background: rgba(0, 0, 0, 0.8);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-repair:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Ajustes Responsive Celulares */
+@media (max-width: 768px) {
+  .wall-destruction-section {
+    min-height: 720px;
+    padding-top: 35px;
+    padding-bottom: 165px;
+  }
+
+  .fn-logo-container {
+    width: 90px;
+    height: 90px;
+    margin-bottom: 12px;
+  }
+
+  .fn-main-title {
+    font-size: 1.55rem;
+    margin-bottom: 8px;
+  }
+
+  .fn-tagline {
+    font-size: 0.82rem;
+    margin-bottom: 20px;
+    padding: 0 10px;
+  }
+
+  .btn-join-whatsapp {
+    padding: 12px 20px;
+    font-size: 0.82rem;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .wall-controls {
+    bottom: 15px;
+    width: 92%;
+  }
+
+  .controls-hint {
+    font-size: 0.68rem;
+    margin-bottom: 2px;
+  }
+
+  .control-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .btn-action {
+    width: 100%;
+    justify-content: center;
+    padding: 10px 14px;
+    font-size: 0.75rem;
+  }
+}
+
+/* ================= FOOTER OFICIAL (FN ESPORT) ================= */
+.site-footer {
+  background-color: #030303;
+  border-top: 2px solid rgba(255, 255, 255, 0.15);
+  position: relative;
+  color: #ffffff;
+  padding: 60px 20px 20px 20px;
+  overflow: hidden;
+}
+
+.footer-container {
+  max-width: 1250px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.4fr 1fr;
+  gap: 40px;
+  align-items: center;
+  padding-bottom: 40px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Columna Marca y Logo */
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.footer-logo {
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.25));
+  transition: transform 0.3s ease;
+}
+
+.footer-logo:hover {
+  transform: scale(1.06);
+}
+
+.footer-brand-title {
+  font-size: 1.2rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.footer-copy {
+  font-size: 0.78rem;
+  color: #777777;
+  font-weight: 600;
+}
+
+/* Columna Central - Frase Motivacional */
+.footer-quote-center {
+  text-align: center;
+  padding: 0 25px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-quote-badge {
+  display: inline-block;
+  background: #ffffff;
+  color: #000000;
+  font-size: 0.68rem;
+  font-weight: 900;
+  padding: 4px 14px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  border-radius: 3px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.footer-quote-text {
+  font-size: clamp(0.95rem, 2vw, 1.2rem);
+  font-weight: 900;
+  font-style: italic;
+  color: #ffffff;
+  letter-spacing: 1px;
+  line-height: 1.4;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+/* Columna Redes Sociales */
+.footer-socials {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.footer-socials-title {
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #aaaaaa;
+  text-transform: uppercase;
+}
+
+.footer-social-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #0d0d0d;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 12px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  transition: all 0.3s ease;
+}
+
+.social-link i {
+  font-size: 1.1rem;
+}
+
+.social-link:hover {
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
+  transform: translateY(-3px);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+}
+
+/* Barra inferior */
+.footer-bottom-bar {
+  text-align: center;
+  padding-top: 20px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #555555;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+/* Responsivo para celulares y tablets */
+@media (max-width: 900px) {
+  .footer-container {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 30px;
+  }
+
+  .footer-brand {
+    align-items: center;
+  }
+
+  .footer-quote-center {
+    border-left: none;
+    border-right: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 25px 0;
+  }
+
+  .footer-socials {
+    align-items: center;
+  }
+
+  .footer-social-buttons {
+    flex-direction: column;
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .social-link {
+    justify-content: center;
+    width: 100%;
   }
 }

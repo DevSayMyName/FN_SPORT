@@ -337,6 +337,81 @@
     </div>
   </section>
 
+<!-- Sección Épica Muro Destruible FN ESPORT -->
+<section class="wall-destruction-section" id="muro-fn">
+  <!-- Canvas donde se renderizan las físicas de destrucción -->
+  <canvas id="wallCanvas"></canvas>
+  
+  <div class="wall-overlay"></div>
+
+  <!-- Contenido que se revela al destruir el muro -->
+  <div class="fn-reveal-content" id="fnRevealContent">
+    <div class="fn-logo-container">
+      <img src="img/acdFN.png" alt="FN ESPORT Logo" class="fn-logo-img" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/111/fff?text=FN';">
+    </div>
+
+    <h2 class="fn-main-title">DOMINANDO LA ISLA</h2>
+    <p class="fn-tagline">Únete a la comunidad oficial de FN ESPORT en WhatsApp y no te pierdas ninguna novedad de nuestros rosters y torneos.</p>
+
+    <div class="fn-cta-container">
+      <a href="https://whatsapp.com/channel/0029Vb7HPaV23n3d0Q9J6E18" target="_blank" rel="noopener noreferrer" class="btn-join-whatsapp">
+        <i class="fab fa-whatsapp"></i> ÚNETE A FN ESPORT
+      </a>
+    </div>
+  </div>
+
+  <!-- Panel de Control Interactivo -->
+  <div class="wall-controls">
+    <p class="controls-hint"><i class="fas fa-crosshair"></i> Haz clic sobre el muro para disparar o usa la ráfaga</p>
+    <div class="control-buttons">
+      <button id="btnAutoFire" class="btn-action btn-fire">
+        <i class="fas fa-fire"></i> DESTRUIR MURO (RÁFAGA)
+      </button>
+      <button id="btnRepairWall" class="btn-action btn-repair">
+        <i class="fas fa-hammer"></i> REPARAR MURO
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER OFICIAL FN ESPORT ================= -->
+<footer class="site-footer">
+  <div class="footer-container">
+    
+    <!-- Columna Izquierda: Logo y Marca -->
+    <div class="footer-brand">
+      <img src="img/logoFn.png" alt="FN ESPORT Logo" class="footer-logo" onerror="this.onerror=null; this.src='fn.jpeg';">
+      <p class="footer-copy">&copy; 2026 FN ESPORT. Todos los derechos reservados.</p>
+    </div>
+
+    <!-- Columna Central: Frase Motivacional -->
+    <div class="footer-quote-center">
+      <span class="footer-quote-badge"><i class="fas fa-fire"></i> LEYENDA COMPETITIVA</span>
+      <p class="footer-quote-text">"LA GLORIA NO SE BUSCA, SE CONQUISTA EN CADA PARTIDA."</p>
+    </div>
+
+    <!-- Columna Derecha: Redes Sociales -->
+    <div class="footer-socials">
+      <h4 class="footer-socials-title">COMUNIDAD OFICIAL</h4>
+      <div class="footer-social-buttons">
+        <a href="https://www.instagram.com/fn_esports_oficial?utm_source=ig_web_button_share_sheet&xtok=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" class="social-link instagram">
+          <i class="fab fa-instagram"></i>
+          <span>INSTAGRAM</span>
+        </a>
+        <a href="https://www.tiktok.com/@fn_esports_?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener noreferrer" class="social-link tiktok">
+          <i class="fab fa-tiktok"></i>
+          <span>TIKTOK</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Barra Inferior -->
+  <div class="footer-bottom-bar">
+    <span>FREE FIRE COMPETITIVE TEAM • FN ESPORT</span>
+  </div>
+</footer>
 
   <script src="script.js"></script>
 </body>

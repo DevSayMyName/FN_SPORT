@@ -626,3 +626,264 @@ async function loadSponsorsFromGoogleSheet() {
     }
   }
 }
+
+// ================= MOTOR DE DESTRUCCIÓN DE MURO (FN ESPORT) =================
+document.addEventListener('DOMContentLoaded', () => {
+  initWallDestruction();
+});
+
+function initWallDestruction() {
+  const canvas = document.getElementById('wallCanvas');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  const revealContent = document.getElementById('fnRevealContent');
+  const btnAutoFire = document.getElementById('btnAutoFire');
+  const btnRepairWall = document.getElementById('btnRepairWall');
+
+  let width, height;
+  let shards = [];
+  let particles = [];
+  let decals = [];
+  let wallIntact = true;
+  let destructionRatio = 0;
+  let audioCtx = null;
+
+  // Sintetizador de Audio Táctico
+  function playGunshotSound() {
+    try {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      const bufferSize = audioCtx.sampleRate * 0.15;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(1000, audioCtx.currentTime);
+      filter.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.12);
+
+      const gain = audioCtx.createGain();
+      gain.gain.setValueAtTime(0.7, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.14);
+
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      noise.start();
+    } catch (e) {
+      // Ignorar restricciones de auto-audio si el usuario aún no ha interactuado
+    }
+  }
+
+  function resizeCanvas() {
+    const parent = canvas.parentElement;
+    width = canvas.width = parent.clientWidth;
+    height = canvas.height = parent.clientHeight;
+    if (shards.length === 0 || wallIntact) {
+      buildWallGrid();
+    }
+  }
+
+  // Generación de bloques de concreto Voronoi
+  function buildWallGrid() {
+    shards = [];
+    particles = [];
+    decals = [];
+    destructionRatio = 0;
+    wallIntact = true;
+    if (revealContent) revealContent.classList.remove('revealed');
+
+    const cols = Math.ceil(width / 70);
+    const rows = Math.ceil(height / 70);
+
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const x = c * 70 + (Math.random() - 0.5) * 20;
+        const y = r * 70 + (Math.random() - 0.5) * 20;
+        const w = 70 + (Math.random() - 0.5) * 15;
+        const h = 70 + (Math.random() - 0.5) * 15;
+
+        shards.push({
+          x: x,
+          y: y,
+          w: w,
+          h: h,
+          vx: 0,
+          vy: 0,
+          rot: 0,
+          vRot: 0,
+          broken: false,
+          alpha: 1,
+          color: Math.random() > 0.5 ? '#1a1a1a' : '#111111'
+        });
+      }
+    }
+  }
+
+  // Creación de impacto y física de escombros
+  function createImpact(x, y, power = 1) {
+    playGunshotSound();
+
+    decals.push({ x, y, radius: (15 + Math.random() * 20) * power });
+
+    // Partículas de humo y chispas
+    for (let i = 0; i < 25 * power; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = (2 + Math.random() * 8) * power;
+      particles.push({
+        x: x,
+        y: y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        size: 2 + Math.random() * 4,
+        color: Math.random() > 0.4 ? '#ffffff' : '#888888',
+        life: 1,
+        decay: 0.02 + Math.random() * 0.03
+      });
+    }
+
+    // Impulso sobre bloques cercanos
+    let brokenCount = 0;
+    shards.forEach(shard => {
+      const dx = (shard.x + shard.w / 2) - x;
+      const dy = (shard.y + shard.h / 2) - y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const forceRadius = 180 * power;
+
+      if (dist < forceRadius) {
+        shard.broken = true;
+        const force = ((forceRadius - dist) / forceRadius) * 14 * power;
+        const angle = Math.atan2(dy, dx);
+
+        shard.vx += Math.cos(angle) * force + (Math.random() - 0.5) * 4;
+        shard.vy += Math.sin(angle) * force + (Math.random() - 0.5) * 4;
+        shard.vRot += (Math.random() - 0.5) * 0.3 * power;
+      }
+
+      if (shard.broken) brokenCount++;
+    });
+
+    destructionRatio = brokenCount / shards.length;
+
+    if (destructionRatio > 0.45 && revealContent) {
+      revealContent.classList.add('revealed');
+    }
+  }
+
+  // Ráfaga automática
+  let isBursting = false;
+  function triggerBurst() {
+    if (isBursting) return;
+    isBursting = true;
+    let shots = 0;
+    const maxShots = 14;
+
+    const interval = setInterval(() => {
+      const rx = width * 0.15 + Math.random() * (width * 0.7);
+      const ry = height * 0.15 + Math.random() * (height * 0.7);
+      createImpact(rx, ry, 1.3);
+
+      shots++;
+      if (shots >= maxShots) {
+        clearInterval(interval);
+        isBursting = false;
+      }
+    }, 90);
+  }
+
+  // Bucle de Renderizado
+  function render() {
+    ctx.clearRect(0, 0, width, height);
+
+    // Dibujar fondo oscuro detrás del muro
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0, 0, width, height);
+
+    // Renderizar Bloques / Esquinas
+    shards.forEach(shard => {
+      if (shard.alpha <= 0) return;
+
+      ctx.save();
+      if (shard.broken) {
+        shard.x += shard.vx;
+        shard.y += shard.vy;
+        shard.vy += 0.35; // Gravedad
+        shard.rot += shard.vRot;
+        shard.alpha -= 0.012;
+      }
+
+      ctx.translate(shard.x + shard.w / 2, shard.y + shard.h / 2);
+      ctx.rotate(shard.rot);
+      ctx.globalAlpha = Math.max(0, shard.alpha);
+
+      ctx.fillStyle = shard.color;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.lineWidth = 1;
+
+      ctx.beginPath();
+      ctx.rect(-shard.w / 2, -shard.h / 2, shard.w, shard.h);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.restore();
+    });
+
+    // Renderizar marcas de disparo (Decals)
+    decals.forEach(d => {
+      ctx.fillStyle = 'rgba(0,0,0,0.7)';
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // Renderizar partículas de chispas
+    particles.forEach((p, idx) => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.life -= p.decay;
+
+      if (p.life <= 0) {
+        particles.splice(idx, 1);
+        return;
+      }
+
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.life;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    requestAnimationFrame(render);
+  }
+
+  // Event Listeners
+  window.addEventListener('resize', resizeCanvas);
+  
+  canvas.addEventListener('click', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    createImpact(x, y, 1);
+  });
+
+  if (btnAutoFire) btnAutoFire.addEventListener('click', triggerBurst);
+  if (btnRepairWall) btnRepairWall.addEventListener('click', buildWallGrid);
+
+  // Inicializar
+  resizeCanvas();
+  render();
+}
