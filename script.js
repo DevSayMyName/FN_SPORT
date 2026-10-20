@@ -1,87 +1,90 @@
+// ==========================================================================
+// FN ESPORT - SCRIPT GENERAL UNIFICADO Y OPTIMIZADO
+// ==========================================================================
+
 document.addEventListener('DOMContentLoaded', () => {
+  // 1. Inicialización de Navegación y UI
+  initNavbarAndMenu();
+
+  // 2. Animaciones de Visibilidad en Scroll
+  initScrollObservers();
+
+  // 3. Consumo Dinámico de Google Sheets
+  loadRostersFromGoogleSheet();
+  loadVictoriesFromGoogleSheet();
+  loadStaffFromGoogleSheet();
+  loadSponsorsFromGoogleSheet();
+
+  // 4. Efectos Interactivos Especiales
+  initTypewriterEffect();
+  initWallDestruction();
+  initParallax3D();
+  setupRosterToggleEvents();
+});
+
+// ==========================================================================
+// 1. NAVEGACIÓN Y MENÚ MÓVIL
+// ==========================================================================
+function initNavbarAndMenu() {
   const navbar = document.getElementById('navbar');
-  const mobileMenuBtn = document.getElementById('mobile-menu');
-  const navMenu = document.getElementById('nav-menu');
+  const mobileMenuBtn = document.getElementById('mobile-menu') || document.getElementById('menuToggle');
+  const navMenu = document.getElementById('nav-menu') || document.getElementById('navMenu');
   const navLinks = document.querySelectorAll('.nav-link');
 
-  // 1. Cambio de sombra en el Navbar al hacer scroll
+  // Sombra en Navbar al hacer Scroll
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) {
-      navbar.classList.add('scrolled');
-    } else {
-      navbar.classList.remove('scrolled');
+    if (navbar) {
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
     }
   });
 
-  // 2. Toggle del Menú Móvil
-  if (mobileMenuBtn) {
+  // Toggle Menú Móvil
+  if (mobileMenuBtn && navMenu) {
     mobileMenuBtn.addEventListener('click', () => {
       navMenu.classList.toggle('active');
     });
   }
 
-  // 3. Resaltado de enlace activo al hacer clic
+  // Enlace activo y cierre automático de menú en móvil
   navLinks.forEach(link => {
     link.addEventListener('click', function () {
       navLinks.forEach(l => l.classList.remove('active'));
       this.classList.add('active');
 
-      // Cerrar menú móvil al hacer click
-      if (navMenu.classList.contains('active')) {
+      if (navMenu && navMenu.classList.contains('active')) {
         navMenu.classList.remove('active');
       }
     });
   });
-});
-
-
-//nosotros
-
-// Animación al hacer Scroll para "Sobre Nosotros"
-const observerOptions = {
-  threshold: 0.25
-};
-
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-    }
-  });
-}, observerOptions);
-
-const aboutSection = document.querySelector('.about-section');
-if (aboutSection) {
-  observer.observe(aboutSection);
 }
 
-// ================= CONSUMO DINÁMICO DE ROSTERS DESDE GOOGLE SHEETS =================
-document.addEventListener('DOMContentLoaded', () => {
-  loadRostersFromGoogleSheet();
-  setupRosterToggleEvents();
-});
+// ==========================================================================
+// 2. HELPER PARA OBTENER DATOS DE GOOGLE SHEETS
+// ==========================================================================
+async function fetchGoogleSheetData(sheetId) {
+  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
+  const response = await fetch(url);
+  const text = await response.text();
+  const jsonString = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+  return JSON.parse(jsonString);
+}
 
+// ==========================================================================
+// 3. CONSUMO DINÁMICO DE ROSTERS (GOOGLE SHEETS)
+// ==========================================================================
 async function loadRostersFromGoogleSheet() {
-  // ID de tu nueva Hoja de Google Sheets
   const SHEET_ID = '1x_1q6dWnLE_Wm20Y7MzzeQSMqrNjDjrceVV8E1AEFPQ';
-  
-  // URL para obtener los datos en formato JSON público
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
-
   const loader = document.getElementById('rosters-loader');
   const container = document.getElementById('rosters-dynamic-container');
 
   if (!container) return;
 
   try {
-    const response = await fetch(url);
-    const text = await response.text();
-
-    // Extraer JSON de la respuesta de Google GViz
-    const jsonString = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
-    const rawData = JSON.parse(jsonString);
-
-    // Mapeo dinámico de columnas por si cambias el orden en Excel
+    const rawData = await fetchGoogleSheetData(SHEET_ID);
     let cols = { roster: 0, nombre: 1, rol: 2, edad: 3, pais: 4, foto: 5, bio: 6 };
 
     if (rawData.table.cols && rawData.table.cols.length > 0) {
@@ -111,14 +114,10 @@ async function loadRostersFromGoogleSheet() {
       const fotoVal = r.c[cols.foto] ? r.c[cols.foto].v : '';
       const bioVal = r.c[cols.bio] ? r.c[cols.bio].v : 'Sin información disponible.';
 
-      // Omitir fila si vuelve a incluir las cabeceras
       if (String(rosterVal).toUpperCase() === 'ROSTER' || String(nombreVal).toUpperCase() === 'NOMBRE') return;
 
       if (nombreVal) {
-        if (!groupedRosters[rosterVal]) {
-          groupedRosters[rosterVal] = [];
-        }
-
+        if (!groupedRosters[rosterVal]) groupedRosters[rosterVal] = [];
         groupedRosters[rosterVal].push({
           nombre: nombreVal,
           rol: rolVal,
@@ -137,7 +136,6 @@ async function loadRostersFromGoogleSheet() {
       return;
     }
 
-    // Iconos temáticos según el nombre de la categoría
     const getRosterIcon = (name) => {
       const lower = name.toLowerCase();
       if (lower.includes('academia') || lower.includes('acd')) return 'fa-graduation-cap';
@@ -201,7 +199,7 @@ async function loadRostersFromGoogleSheet() {
   }
 }
 
-// Evento delegado para el botón "Saber más" en los jugadores cargados dinámicamente
+// Desplegable "Saber más" para Rosters
 function setupRosterToggleEvents() {
   const container = document.getElementById('rosters-dynamic-container');
   if (!container) return;
@@ -214,40 +212,26 @@ function setupRosterToggleEvents() {
     const span = btn.querySelector('span');
 
     card.classList.toggle('active');
-
-    if (card.classList.contains('active')) {
-      span.textContent = 'Ocultar info';
-    } else {
-      span.textContent = 'Saber más';
+    if (span) {
+      span.textContent = card.classList.contains('active') ? 'Ocultar info' : 'Saber más';
     }
   });
 }
-// ================= CONSUMO DE GOOGLE SHEETS (GALERÍA DE VICTORIAS) =================
-document.addEventListener('DOMContentLoaded', () => {
-  loadVictoriesFromGoogleSheet();
-});
 
+// ==========================================================================
+// 4. CONSUMO DINÁMICO DE VICTORIAS (GOOGLE SHEETS)
+// ==========================================================================
 async function loadVictoriesFromGoogleSheet() {
   const SHEET_ID = '1pLAyXbqviit4rQSQyPRyox_OepqHTu9IOGv8fkYZ3WY';
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
-
   const loader = document.getElementById('victories-loader');
   const grid = document.getElementById('victories-grid');
 
   if (!grid) return;
 
   try {
-    const response = await fetch(url);
-    const text = await response.text();
+    const rawData = await fetchGoogleSheetData(SHEET_ID);
+    let eventoIdx = 0, imgIdx = 1;
 
-    // Extraemos la estructura JSON limpia que devuelve Google GViz API
-    const jsonString = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
-    const rawData = JSON.parse(jsonString);
-
-    let eventoIdx = 0;
-    let imgIdx = 1;
-
-    // Mapeo dinámico de las columnas 'EVENTO' e 'IMG'
     if (rawData.table.cols && rawData.table.cols.length > 0) {
       rawData.table.cols.forEach((col, idx) => {
         const label = (col.label || col.id || '').toUpperCase();
@@ -265,10 +249,7 @@ async function loadVictoriesFromGoogleSheet() {
       const eventoVal = r.c[eventoIdx] ? r.c[eventoIdx].v : '';
       const imgVal = r.c[imgIdx] ? r.c[imgIdx].v : '';
 
-      // Omitir fila si vuelve a contener las cabeceras por error de formato
-      if (String(eventoVal).toUpperCase() === 'EVENTO' || String(imgVal).toUpperCase() === 'IMG') {
-        return;
-      }
+      if (String(eventoVal).toUpperCase() === 'EVENTO' || String(imgVal).toUpperCase() === 'IMG') return;
 
       if (eventoVal || imgVal) {
         victories.push({
@@ -278,7 +259,6 @@ async function loadVictoriesFromGoogleSheet() {
       }
     });
 
-    // Ocultar cargador
     if (loader) loader.style.display = 'none';
 
     if (victories.length === 0) {
@@ -286,7 +266,6 @@ async function loadVictoriesFromGoogleSheet() {
       return;
     }
 
-    // Renderizar las tarjetas dinámicamente
     grid.innerHTML = victories.map(v => `
       <div class="victory-card">
         <div class="victory-img-wrapper">
@@ -306,57 +285,28 @@ async function loadVictoriesFromGoogleSheet() {
     `).join('');
 
   } catch (error) {
-    console.error('Error al cargar datos desde Google Sheets:', error);
+    console.error('Error al cargar victorias:', error);
     if (loader) {
       loader.innerHTML = `
         <i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i>
-        <p>No se pudo conectar con la hoja de victorias. Verifique que el documento esté en modo público.</p>
+        <p>No se pudo conectar con la hoja de victorias.</p>
       `;
     }
   }
 }
 
-
-
-//frases
-// Animación de Aparición para la Sección de Frases
-const quotesObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-    }
-  });
-}, { threshold: 0.2 });
-
-const quotesSection = document.querySelector('.quotes-section');
-if (quotesSection) {
-  quotesObserver.observe(quotesSection);
-}
-
-
-// ================= CONSUMO DINÁMICO DEL STAFF DESDE GOOGLE SHEETS =================
-document.addEventListener('DOMContentLoaded', () => {
-  loadStaffFromGoogleSheet();
-});
-
+// ==========================================================================
+// 5. CONSUMO DINÁMICO DE STAFF (GOOGLE SHEETS)
+// ==========================================================================
 async function loadStaffFromGoogleSheet() {
-  // ID de tu Google Sheet para el Staff
   const SHEET_ID = '1Ur_hK9L-rRRiGFjU9_qos1d7Co9XVcWLAJ-2t40LWQw';
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
-
   const loader = document.getElementById('staff-loader');
   const container = document.getElementById('staff-dynamic-container');
 
   if (!container) return;
 
   try {
-    const response = await fetch(url);
-    const text = await response.text();
-
-    const jsonString = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
-    const rawData = JSON.parse(jsonString);
-
-    // Mapeo dinámico de columnas (NOMBRE, ROL, PAIS, EDAD, FOTO/IMG, INSTAGRAM, FACEBOOK, TIKTOK)
+    const rawData = await fetchGoogleSheetData(SHEET_ID);
     let cols = { nombre: 0, rol: 1, pais: 2, edad: 3, foto: 4, instagram: 5, facebook: 6, tiktok: 7 };
 
     if (rawData.table.cols && rawData.table.cols.length > 0) {
@@ -388,7 +338,6 @@ async function loadStaffFromGoogleSheet() {
       const fbVal = r.c[cols.facebook] ? r.c[cols.facebook].v : '';
       const tkVal = r.c[cols.tiktok] ? r.c[cols.tiktok].v : '';
 
-      // Omitir cabeceras si se leen de nuevo
       if (String(nombreVal).toUpperCase() === 'NOMBRE' || String(rolVal).toUpperCase() === 'ROL') return;
 
       if (nombreVal) {
@@ -412,19 +361,11 @@ async function loadStaffFromGoogleSheet() {
       return;
     }
 
-    // Renderizado dinámico de tarjetas con Redes Sociales
     container.innerHTML = staffMembers.map(m => {
-      // Generar botones solo para las redes que tengan enlace
       let socialButtons = '';
-      if (m.instagram) {
-        socialButtons += `<a href="${m.instagram}" target="_blank" class="staff-social-btn" title="Instagram"><i class="fab fa-instagram"></i></a>`;
-      }
-      if (m.facebook) {
-        socialButtons += `<a href="${m.facebook}" target="_blank" class="staff-social-btn" title="Facebook"><i class="fab fa-facebook-f"></i></a>`;
-      }
-      if (m.tiktok) {
-        socialButtons += `<a href="${m.tiktok}" target="_blank" class="staff-social-btn" title="TikTok"><i class="fab fa-tiktok"></i></a>`;
-      }
+      if (m.instagram) socialButtons += `<a href="${m.instagram}" target="_blank" class="staff-social-btn" title="Instagram"><i class="fab fa-instagram"></i></a>`;
+      if (m.facebook) socialButtons += `<a href="${m.facebook}" target="_blank" class="staff-social-btn" title="Facebook"><i class="fab fa-facebook-f"></i></a>`;
+      if (m.tiktok) socialButtons += `<a href="${m.tiktok}" target="_blank" class="staff-social-btn" title="TikTok"><i class="fab fa-tiktok"></i></a>`;
 
       return `
         <div class="staff-card">
@@ -452,18 +393,16 @@ async function loadStaffFromGoogleSheet() {
     if (loader) {
       loader.innerHTML = `
         <i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i>
-        <p>No se pudieron cargar los datos del Staff. Asegúrate de otorgar acceso público a la hoja de cálculo.</p>
+        <p>No se pudieron cargar los datos del Staff.</p>
       `;
     }
   }
 }
 
-
-
-
-//
-/// ================= ANIMACIÓN MÁQUINA DE ESCRIBIR ÉPICA (SPONSORS - FN ESPORT) =================
-document.addEventListener('DOMContentLoaded', () => {
+// ==========================================================================
+// 6. MÁQUINA DE ESCRIBIR Y SPONSORS (GOOGLE SHEETS)
+// ==========================================================================
+function initTypewriterEffect() {
   const phrases = [
     "ÚNETE A FN ESPORT",
     "INVIERTE EN LA VICTORIA",
@@ -477,12 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const targetElement = document.getElementById('dynamic-sponsor-text');
   if (!targetElement) return;
 
-  let phraseIndex = 0;
-  let charIndex = 0;
-  let isDeleting = false;
-  const typingSpeed = 65;    // Velocidad de escritura
-  const deletingSpeed = 35;  // Velocidad de borrado
-  const pauseTime = 1800;    // Tiempo que se muestra cada frase en pantalla
+  let phraseIndex = 0, charIndex = 0, isDeleting = false;
 
   function typeEffect() {
     const currentPhrase = phrases[phraseIndex];
@@ -495,13 +429,12 @@ document.addEventListener('DOMContentLoaded', () => {
       charIndex++;
     }
 
-    let nextSpeed = isDeleting ? deletingSpeed : typingSpeed;
+    let nextSpeed = isDeleting ? 35 : 65;
 
     if (!isDeleting && charIndex === currentPhrase.length) {
-      nextSpeed = pauseTime;
+      nextSpeed = 1800;
       isDeleting = true;
-    } 
-    else if (isDeleting && charIndex === 0) {
+    } else if (isDeleting && charIndex === 0) {
       isDeleting = false;
       phraseIndex = (phraseIndex + 1) % phrases.length;
       nextSpeed = 300;
@@ -511,32 +444,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   typeEffect();
-});
-
-
-// ================= CONSUMO DINÁMICO DE SPONSORS DESDE GOOGLE SHEETS =================
-document.addEventListener('DOMContentLoaded', () => {
-  loadSponsorsFromGoogleSheet();
-});
+}
 
 async function loadSponsorsFromGoogleSheet() {
-  // ID de la Hoja de Cálculo de Sponsors
   const SHEET_ID = '158f-BBBHiDbsOsz-y53wbI5BipnHvEBa81o1-_eY5ZY';
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
-
   const loader = document.getElementById('sponsors-loader');
   const container = document.getElementById('sponsors-dynamic-container');
 
   if (!container) return;
 
   try {
-    const response = await fetch(url);
-    const text = await response.text();
-
-    const jsonString = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
-    const rawData = JSON.parse(jsonString);
-
-    // Mapeo flexible de columnas (NOMBRE, LOGO, ROL, INSTAGRAM, FACEBOOK, TIKTOK)
+    const rawData = await fetchGoogleSheetData(SHEET_ID);
     let cols = { nombre: 0, logo: 1, rol: 2, instagram: 3, facebook: 4, tiktok: 5 };
 
     if (rawData.table.cols && rawData.table.cols.length > 0) {
@@ -564,7 +482,6 @@ async function loadSponsorsFromGoogleSheet() {
       const fbVal = r.c[cols.facebook] ? r.c[cols.facebook].v : '';
       const tkVal = r.c[cols.tiktok] ? r.c[cols.tiktok].v : '';
 
-      // Omitir fila si es la cabecera
       if (String(nombreVal).toUpperCase() === 'NOMBRE' || String(logoVal).toUpperCase() === 'LOGO') return;
 
       if (nombreVal || logoVal) {
@@ -586,19 +503,11 @@ async function loadSponsorsFromGoogleSheet() {
       return;
     }
 
-    // Generar HTML dinámico
     container.innerHTML = sponsorsList.map(s => {
-      // Construir iconos de redes solo si existe el enlace
       let socialButtons = '';
-      if (s.instagram) {
-        socialButtons += `<a href="${s.instagram}" target="_blank" class="sponsor-social-btn" title="Instagram"><i class="fab fa-instagram"></i></a>`;
-      }
-      if (s.facebook) {
-        socialButtons += `<a href="${s.facebook}" target="_blank" class="sponsor-social-btn" title="Facebook"><i class="fab fa-facebook-f"></i></a>`;
-      }
-      if (s.tiktok) {
-        socialButtons += `<a href="${s.tiktok}" target="_blank" class="sponsor-social-btn" title="TikTok"><i class="fab fa-tiktok"></i></a>`;
-      }
+      if (s.instagram) socialButtons += `<a href="${s.instagram}" target="_blank" class="sponsor-social-btn" title="Instagram"><i class="fab fa-instagram"></i></a>`;
+      if (s.facebook) socialButtons += `<a href="${s.facebook}" target="_blank" class="sponsor-social-btn" title="Facebook"><i class="fab fa-facebook-f"></i></a>`;
+      if (s.tiktok) socialButtons += `<a href="${s.tiktok}" target="_blank" class="sponsor-social-btn" title="TikTok"><i class="fab fa-tiktok"></i></a>`;
 
       return `
         <div class="sponsor-card">
@@ -617,21 +526,85 @@ async function loadSponsorsFromGoogleSheet() {
     }).join('');
 
   } catch (error) {
-    console.error('Error al cargar los Sponsors:', error);
+    console.error('Error al cargar Sponsors:', error);
     if (loader) {
       loader.innerHTML = `
         <i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i>
-        <p>No se pudieron cargar los Sponsors. Verifica que la hoja de cálculo sea pública.</p>
+        <p>No se pudieron cargar los Sponsors.</p>
       `;
     }
   }
 }
 
-// ================= MOTOR DE DESTRUCCIÓN DE MURO (FN ESPORT) =================
-document.addEventListener('DOMContentLoaded', () => {
-  initWallDestruction();
-});
+// ==========================================================================
+// 7. MOTOR PARALLAX 3D (DELEGADO MOUSE + GIROSCOPIO)
+// ==========================================================================
+function initParallax3D() {
+  // 1. Delegación de evento Mousemove para tarjetas dinámicas en PC
+  document.addEventListener('mousemove', (e) => {
+    const card = e.target.closest('.player-card');
+    
+    // Si el mouse no está sobre una tarjeta, resetea todas
+    if (!card) {
+      document.querySelectorAll('.player-card').forEach(c => {
+        c.style.transform = 'rotateX(0deg) rotateY(0deg)';
+      });
+      return;
+    }
 
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const rotateX = ((y - centerY) / centerY) * -12;
+    const rotateY = ((x - centerX) / centerX) * 12;
+
+    card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+  });
+
+  // 2. Giroscopio Móvil
+  if (window.DeviceOrientationEvent) {
+    window.addEventListener('deviceorientation', (e) => {
+      if (!e.gamma || !e.beta) return;
+
+      const tiltX = Math.min(Math.max(e.beta - 40, -15), 15);
+      const tiltY = Math.min(Math.max(e.gamma, -15), 15);
+
+      document.querySelectorAll('.player-card').forEach(card => {
+        const rect = card.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          card.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+        }
+      });
+    });
+  }
+}
+
+// ==========================================================================
+// 8. OBSERVERS DE SCROLL
+// ==========================================================================
+function initScrollObservers() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.25 });
+
+  const aboutSection = document.querySelector('.about-section');
+  const quotesSection = document.querySelector('.quotes-section');
+
+  if (aboutSection) observer.observe(aboutSection);
+  if (quotesSection) observer.observe(quotesSection);
+}
+
+// ==========================================================================
+// 9. MOTOR DE DESTRUCCIÓN DE MURO (CANVAS)
+// ==========================================================================
 function initWallDestruction() {
   const canvas = document.getElementById('wallCanvas');
   if (!canvas) return;
@@ -642,14 +615,10 @@ function initWallDestruction() {
   const btnRepairWall = document.getElementById('btnRepairWall');
 
   let width, height;
-  let shards = [];
-  let particles = [];
-  let decals = [];
-  let wallIntact = true;
+  let shards = [], particles = [], decals = [];
   let destructionRatio = 0;
   let audioCtx = null;
 
-  // Sintetizador de Audio Táctico
   function playGunshotSound() {
     try {
       if (!audioCtx) {
@@ -684,7 +653,7 @@ function initWallDestruction() {
 
       noise.start();
     } catch (e) {
-      // Ignorar restricciones de auto-audio si el usuario aún no ha interactuado
+      // Ignorar restricciones de audio automático
     }
   }
 
@@ -692,18 +661,14 @@ function initWallDestruction() {
     const parent = canvas.parentElement;
     width = canvas.width = parent.clientWidth;
     height = canvas.height = parent.clientHeight;
-    if (shards.length === 0 || wallIntact) {
-      buildWallGrid();
-    }
+    if (shards.length === 0) buildWallGrid();
   }
 
-  // Generación de bloques de concreto Voronoi
   function buildWallGrid() {
     shards = [];
     particles = [];
     decals = [];
     destructionRatio = 0;
-    wallIntact = true;
     if (revealContent) revealContent.classList.remove('revealed');
 
     const cols = Math.ceil(width / 70);
@@ -711,16 +676,11 @@ function initWallDestruction() {
 
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
-        const x = c * 70 + (Math.random() - 0.5) * 20;
-        const y = r * 70 + (Math.random() - 0.5) * 20;
-        const w = 70 + (Math.random() - 0.5) * 15;
-        const h = 70 + (Math.random() - 0.5) * 15;
-
         shards.push({
-          x: x,
-          y: y,
-          w: w,
-          h: h,
+          x: c * 70 + (Math.random() - 0.5) * 20,
+          y: r * 70 + (Math.random() - 0.5) * 20,
+          w: 70 + (Math.random() - 0.5) * 15,
+          h: 70 + (Math.random() - 0.5) * 15,
           vx: 0,
           vy: 0,
           rot: 0,
@@ -733,13 +693,10 @@ function initWallDestruction() {
     }
   }
 
-  // Creación de impacto y física de escombros
   function createImpact(x, y, power = 1) {
     playGunshotSound();
-
     decals.push({ x, y, radius: (15 + Math.random() * 20) * power });
 
-    // Partículas de humo y chispas
     for (let i = 0; i < 25 * power; i++) {
       const angle = Math.random() * Math.PI * 2;
       const speed = (2 + Math.random() * 8) * power;
@@ -755,7 +712,6 @@ function initWallDestruction() {
       });
     }
 
-    // Impulso sobre bloques cercanos
     let brokenCount = 0;
     shards.forEach(shard => {
       const dx = (shard.x + shard.w / 2) - x;
@@ -777,19 +733,16 @@ function initWallDestruction() {
     });
 
     destructionRatio = brokenCount / shards.length;
-
     if (destructionRatio > 0.45 && revealContent) {
       revealContent.classList.add('revealed');
     }
   }
 
-  // Ráfaga automática
   let isBursting = false;
   function triggerBurst() {
     if (isBursting) return;
     isBursting = true;
     let shots = 0;
-    const maxShots = 14;
 
     const interval = setInterval(() => {
       const rx = width * 0.15 + Math.random() * (width * 0.7);
@@ -797,22 +750,19 @@ function initWallDestruction() {
       createImpact(rx, ry, 1.3);
 
       shots++;
-      if (shots >= maxShots) {
+      if (shots >= 14) {
         clearInterval(interval);
         isBursting = false;
       }
     }, 90);
   }
 
-  // Bucle de Renderizado
   function render() {
     ctx.clearRect(0, 0, width, height);
 
-    // Dibujar fondo oscuro detrás del muro
     ctx.fillStyle = '#050505';
     ctx.fillRect(0, 0, width, height);
 
-    // Renderizar Bloques / Esquinas
     shards.forEach(shard => {
       if (shard.alpha <= 0) return;
 
@@ -820,7 +770,7 @@ function initWallDestruction() {
       if (shard.broken) {
         shard.x += shard.vx;
         shard.y += shard.vy;
-        shard.vy += 0.35; // Gravedad
+        shard.vy += 0.35;
         shard.rot += shard.vRot;
         shard.alpha -= 0.012;
       }
@@ -841,7 +791,6 @@ function initWallDestruction() {
       ctx.restore();
     });
 
-    // Renderizar marcas de disparo (Decals)
     decals.forEach(d => {
       ctx.fillStyle = 'rgba(0,0,0,0.7)';
       ctx.beginPath();
@@ -849,7 +798,6 @@ function initWallDestruction() {
       ctx.fill();
     });
 
-    // Renderizar partículas de chispas
     particles.forEach((p, idx) => {
       p.x += p.vx;
       p.y += p.vy;
@@ -870,20 +818,16 @@ function initWallDestruction() {
     requestAnimationFrame(render);
   }
 
-  // Event Listeners
   window.addEventListener('resize', resizeCanvas);
   
   canvas.addEventListener('click', (e) => {
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    createImpact(x, y, 1);
+    createImpact(e.clientX - rect.left, e.clientY - rect.top, 1);
   });
 
   if (btnAutoFire) btnAutoFire.addEventListener('click', triggerBurst);
   if (btnRepairWall) btnRepairWall.addEventListener('click', buildWallGrid);
 
-  // Inicializar
   resizeCanvas();
   render();
 }
