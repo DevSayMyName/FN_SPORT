@@ -537,46 +537,25 @@ async function loadSponsorsFromGoogleSheet() {
 }
 
 // ==========================================================================
-// 7. MOTOR PARALLAX 3D (DELEGADO MOUSE + GIROSCOPIO)
+// 7. MOTOR PARALLAX 3D EXCLUSIVO PARA LA FOTO DEL JUGADOR (GIROSCOPIO)
 // ==========================================================================
 function initParallax3D() {
-  // 1. Delegación de evento Mousemove para tarjetas dinámicas en PC
-  document.addEventListener('mousemove', (e) => {
-    const card = e.target.closest('.player-card');
-    
-    // Si el mouse no está sobre una tarjeta, resetea todas
-    if (!card) {
-      document.querySelectorAll('.player-card').forEach(c => {
-        c.style.transform = 'rotateX(0deg) rotateY(0deg)';
-      });
-      return;
-    }
-
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const rotateX = ((y - centerY) / centerY) * -12;
-    const rotateY = ((x - centerX) / centerX) * 12;
-
-    card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-  });
-
-  // 2. Giroscopio Móvil
   if (window.DeviceOrientationEvent) {
     window.addEventListener('deviceorientation', (e) => {
-      if (!e.gamma || !e.beta) return;
+      if (e.gamma === null || e.beta === null) return;
 
+      // Inclinación calculada
       const tiltX = Math.min(Math.max(e.beta - 40, -15), 15);
       const tiltY = Math.min(Math.max(e.gamma, -15), 15);
 
-      document.querySelectorAll('.player-card').forEach(card => {
-        const rect = card.getBoundingClientRect();
-        if (rect.top < window.innerHeight && rect.bottom > 0) {
-          card.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+      // Aplica ÚNICAMENTE a la imagen del jugador (.player-photo)
+      document.querySelectorAll('.player-photo').forEach(photo => {
+        const card = photo.closest('.player-card');
+        if (card) {
+          const rect = card.getBoundingClientRect();
+          if (rect.top < window.innerHeight && rect.bottom > 0) {
+            photo.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.06)`;
+          }
         }
       });
     });
